@@ -7,7 +7,9 @@ class ProductProvider extends Component {
     super();
     this.state = {
       products: [],
-      detailProduct: detailProduct
+      detailProduct: detailProduct,
+      cart: [],
+      modalOpen: true
     };
   }
 
@@ -24,12 +26,34 @@ class ProductProvider extends Component {
     this.setProducts();
   }
 
-  handleDetail = () => {
-    console.log("hello from detaill");
+  getItem = id => {
+    const product = this.state.products.find(item => item.id === id);
+    return product;
+  };
+
+  handleDetail = id => {
+    const product = this.getItem(id);
+    this.setState(() => {
+      return { detailProduct: product };
+    });
   };
 
   addToCart = id => {
-    console.log(`hello from add to cart id is ${id}`);
+    let tempProducts = [...this.state.products];
+    const index = tempProducts.indexOf(this.getItem(id));
+    const product = { ...tempProducts[index] };
+    product.inCart = true;
+    product.count = 1;
+    const price = product.price;
+    product.total = price;
+    tempProducts[index] = product;
+    this.setState(() => {
+      return {
+        products: tempProducts,
+        detailProduct: product,
+        cart: [...this.state.cart, product]
+      };
+    });
   };
 
   render() {
