@@ -22,7 +22,10 @@ export default class Product extends Component {
                 <button
                   className="cart-btn"
                   disabled={inCart ? true : false}
-                  onClick={() => value.addToCart(id)}
+                  onClick={() => {
+                    value.addToCart(id);
+                    value.openModal(id);
+                  }}
                 >
                   {inCart ? (
                     <p className="text-capitalize mb-0" disabled>
@@ -62,12 +65,12 @@ Product.propTypes = {
 const ProductWrapper = styled.div`
   .card {
     border-color: transparent;
-    transition: all 1s linear;
+    transition: all 0.5s linear;
   }
   .card-footer {
     background: transparent;
     border: transparent;
-    transition: all 1s linear;
+    transition: all 0.5s linear;
   }
   &:hover {
     .card {
@@ -83,7 +86,7 @@ const ProductWrapper = styled.div`
     overflow: hidden;
   }
   .card-img-top {
-    transition: all 1s linear;
+    transition: all 0.5s linear;
   }
   .img-container:hover .card-img-top {
     transform: scale(1.2);
@@ -99,7 +102,7 @@ const ProductWrapper = styled.div`
     border: none;
     border-radius: 0.5rem 0 0 0;
     transform: translate(100%, 100%);
-    transition: all 1s linear;
+    transition: all 0.5s linear;
   }
   .img-container:hover .cart-btn {
     transform: translate(0, 0);
