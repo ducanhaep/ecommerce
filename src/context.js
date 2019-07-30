@@ -42,6 +42,31 @@ class ProductProvider extends Component {
     });
   };
 
+  // addToCart = id => {
+  //   let tempProducts = [...this.state.products];
+  //   const index = tempProducts.indexOf(this.getItem(id));
+  //   const product = { ...tempProducts[index] };
+  //   product.inCart = true;
+  //   product.count = 1;
+  //   const price = product.price;
+  //   product.total = price;
+  //   const tax = product.price.toFixed(2);
+  //   tempProducts[index] = product;
+  //   this.setState(
+  //     prevState => {
+  //       return {
+  //         products: tempProducts,
+  //         detailProduct: product,
+  //         cart: [...this.state.cart, product],
+  //         cartSubTotal: prevState.cartSubTotal + product.price,
+  //         cartTax: prevState.cartTax + tax * 0.1,
+  //         cartTotal: prevState.cartTotal + product.price + tax * 0.1
+  //       };
+  //     },
+  //     () => console.log(this.state)
+  //   );
+  // };
+
   addToCart = id => {
     let tempProducts = [...this.state.products];
     const index = tempProducts.indexOf(this.getItem(id));
@@ -51,16 +76,18 @@ class ProductProvider extends Component {
     const price = product.price;
     product.total = price;
     tempProducts[index] = product;
-    this.setState(prevState => {
-      return {
-        products: tempProducts,
-        detailProduct: product,
-        cart: [...this.state.cart, product],
-        cartSubTotal: prevState.cartSubTotal + product.total,
-        cartTax: prevState.cartTax + product.total * 0.1,
-        cartTotal: prevState.cartTotal + product.total + product.total * 0.1
-      };
-    });
+    this.setState(
+      () => {
+        return {
+          products: tempProducts,
+          detailProduct: product,
+          cart: [...this.state.cart, product]
+        };
+      },
+      () => {
+        this.addTotals();
+      }
+    );
   };
 
   openModal = id => {
@@ -74,19 +101,20 @@ class ProductProvider extends Component {
 
   increment = id => {
     let tempCart = [...this.state.cart];
-    const index = tempCart.indexOf(this.getItem(id));
+    const index = tempCart.indexOf(tempCart.find(item => item.id === id));
     const product = { ...tempCart[index] };
     product.count++;
     const total = product.price * product.count;
     product.total = total;
     tempCart[index] = product;
+    const tax = product.price.toFixed(2);
     this.setState(
       prevState => {
         return {
           cart: tempCart,
-          cartSubTotal: (prevState.cartSubTotal += product.total),
-          cartTax: this.state.cartSubTotal * 0.1,
-          cartTotal: this.cartSubTotal + this.state.cartTax
+          cartSubTotal: prevState.cartSubTotal + product.price,
+          cartTax: prevState.cartTax + tax * 0.1,
+          cartTotal: prevState.cartTotal + product.price + tax * 0.1
         };
       },
       () => console.log(this.state)
@@ -98,12 +126,53 @@ class ProductProvider extends Component {
   };
 
   removeItem = id => {
-    console.log("remove item");
+    let tempProducts = [...this.state.products];
+    let tempCart = [...this.state.cart];
+
+    tempCart = [...tempCart.filter(item => item.id !== id)];
+    const index = tempProducts.indexOf(this.getItem(id));
+    let removedProduct = { ...tempProducts[index] };
+    removedProduct.inCart = false;
+    removedProduct.count = 0;
+    removedProduct.total = 0;
+    tempProducts[index] = removedProduct;
+    this.setState(
+      () => {
+        return { products: tempProducts, cart: tempCart };
+      },
+      () => {
+        this.addTotals();
+      }
+    );
   };
 
   clearCart = () => {
-    console.log("clear cart");
+    this.setState(
+      () => {
+        return { cart: [] };
+      },
+      () => {
+        this.setProducts();
+        this.addTotals();
+      }
+    );
   };
+
+  addTotals = () => {
+    let subTotal = 0;
+    this.state.cart.map(item => (subTotal += item.total));
+    const tempTax = subTotal * 0.1;
+    const tax = parseFloat(tempTax.toFixed(2));
+    const total = subTotal + tax;
+    this.setState(() => {
+      return {
+        cartSubTotal: subTotal,
+        cartTax: tax,
+        cartTotal: total
+      };
+    });
+  };
+
   render() {
     return (
       <ProductContext.Provider
