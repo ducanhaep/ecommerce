@@ -30,6 +30,24 @@ class ProductProvider extends Component {
     this.setProducts();
   }
 
+  UNSAFE_componentWillMount() {
+    let detailProduct = JSON.parse(localStorage.getItem("detailProduct"));
+    let cart = JSON.parse(localStorage.getItem("cart"));
+    if (cart === null) {
+      cart = [];
+    }
+    let cartSubTotal = JSON.parse(localStorage.getItem("cartSubTotal"));
+    let cartTax = JSON.parse(localStorage.getItem("cartTax"));
+    let cartTotal = JSON.parse(localStorage.getItem("cartTotal"));
+    this.setState({
+      detailProduct,
+      cart,
+      cartSubTotal,
+      cartTax,
+      cartTotal
+    });
+  }
+
   getItem = id => {
     const product = this.state.products.find(item => item.id === id);
     return product;
@@ -40,6 +58,7 @@ class ProductProvider extends Component {
     this.setState(() => {
       return { detailProduct: product };
     });
+    localStorage.setItem("detailProduct", JSON.stringify(product));
   };
 
   addToCart = id => {
@@ -61,6 +80,7 @@ class ProductProvider extends Component {
       },
       () => {
         this.addTotals();
+        localStorage.setItem("cart", JSON.stringify(this.state.cart));
       }
     );
   };
@@ -117,7 +137,6 @@ class ProductProvider extends Component {
   removeItem = id => {
     let tempProducts = [...this.state.products];
     let tempCart = [...this.state.cart];
-
     tempCart = [...tempCart.filter(item => item.id !== id)];
     const index = tempProducts.indexOf(this.getItem(id));
     let removedProduct = { ...tempProducts[index] };
@@ -153,13 +172,20 @@ class ProductProvider extends Component {
     const tempTax = subTotal * 0.1;
     const tax = parseFloat(tempTax.toFixed(2));
     const total = subTotal + tax;
-    this.setState(() => {
-      return {
-        cartSubTotal: subTotal,
-        cartTax: tax,
-        cartTotal: total
-      };
-    });
+    this.setState(
+      () => {
+        return {
+          cartSubTotal: subTotal,
+          cartTax: tax,
+          cartTotal: total
+        };
+      },
+      () => {
+        localStorage.setItem("cartSubTotal", this.state.cartSubTotal);
+        localStorage.setItem("cartTax", this.state.cartTax);
+        localStorage.setItem("cartTotal", this.state.cartTotal);
+      }
+    );
   };
 
   render() {
