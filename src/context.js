@@ -23,22 +23,31 @@ class ProductProvider extends Component {
       const singleItem = { ...item };
       products = [...products, singleItem];
     });
-    this.setState({ products });
+    this.setState({ products }, () => {
+      localStorage.removeItem("products");
+    });
   };
 
   componentDidMount() {
-    this.setProducts();
-  }
-
-  UNSAFE_componentWillMount() {
+    if (JSON.parse(localStorage.getItem("products") === null)) {
+      console.log("run condition products did mount");
+      this.setProducts();
+    } else {
+      let products = JSON.parse(localStorage.getItem("products"));
+      this.setState({
+        products
+      });
+    }
     let detailProduct = JSON.parse(localStorage.getItem("detailProduct"));
     let cart = JSON.parse(localStorage.getItem("cart"));
-    if (cart === null) {
-      cart = [];
-    }
+    // if (cart === null) {
+    //   console.log("run condition cart did mount");
+    //   cart = [];
+    // }
     let cartSubTotal = JSON.parse(localStorage.getItem("cartSubTotal"));
     let cartTax = JSON.parse(localStorage.getItem("cartTax"));
     let cartTotal = JSON.parse(localStorage.getItem("cartTotal"));
+
     this.setState({
       detailProduct,
       cart,
@@ -81,6 +90,7 @@ class ProductProvider extends Component {
       () => {
         this.addTotals();
         localStorage.setItem("cart", JSON.stringify(this.state.cart));
+        localStorage.setItem("products", JSON.stringify(this.state.products));
       }
     );
   };
@@ -108,6 +118,7 @@ class ProductProvider extends Component {
       },
       () => {
         this.addTotals();
+        localStorage.setItem("cart", JSON.stringify(this.state.cart));
       }
     );
   };
@@ -129,6 +140,7 @@ class ProductProvider extends Component {
         },
         () => {
           this.addTotals();
+          localStorage.setItem("cart", JSON.stringify(this.state.cart));
         }
       );
     }
@@ -150,6 +162,8 @@ class ProductProvider extends Component {
       },
       () => {
         this.addTotals();
+        localStorage.setItem("cart", JSON.stringify(this.state.cart));
+        localStorage.setItem("products", JSON.stringify(this.state.products));
       }
     );
   };
@@ -162,6 +176,8 @@ class ProductProvider extends Component {
       () => {
         this.setProducts();
         this.addTotals();
+        localStorage.setItem("cart", JSON.stringify(this.state.cart));
+        localStorage.setItem("products", JSON.stringify(this.state.products));
       }
     );
   };

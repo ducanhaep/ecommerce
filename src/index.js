@@ -8,7 +8,7 @@ import { ProductProvider } from "./context";
 
 ReactDOM.render(
   <ProductProvider>
-    <Router>
+    <Router hashType="noslash">
       <App />
     </Router>
   </ProductProvider>,
