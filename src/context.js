@@ -40,10 +40,10 @@ class ProductProvider extends Component {
     }
     let detailProduct = JSON.parse(localStorage.getItem("detailProduct"));
     let cart = JSON.parse(localStorage.getItem("cart"));
-    // if (cart === null) {
-    //   console.log("run condition cart did mount");
-    //   cart = [];
-    // }
+    if (cart === null) {
+      console.log("run condition cart did mount");
+      cart = [];
+    }
     let cartSubTotal = JSON.parse(localStorage.getItem("cartSubTotal"));
     let cartTax = JSON.parse(localStorage.getItem("cartTax"));
     let cartTotal = JSON.parse(localStorage.getItem("cartTotal"));
